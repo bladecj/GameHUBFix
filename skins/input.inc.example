@@ -2,8 +2,9 @@
 ;   GameHUB 2\@Resources\Include\input.inc
 ;
 ; UpdateDivider=-1 -> this measure does not poll on its own. The always-on
-; PadListener skin drives Update(); plugin state is process-global and shared
-; by every skin that loads the DLL.
+; host skin (standard: GameHUB 2\Button) drives Update(); plugin state is
+; process-global and shared by every skin that loads the DLL. This section
+; exists only so Lua's !CommandMeasure can find an entry point.
 
 [GameHUBFix]
 Measure=Plugin

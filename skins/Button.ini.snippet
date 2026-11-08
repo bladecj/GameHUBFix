@@ -1,0 +1,27 @@
+; 合并进 Skins\GameHUB 2\Button\Button.ini
+; Button 要常驻（Active=1），[Rainmeter] 里 Update=100
+; 已有 [GamepadActivation] 就只改 IfCondition，别重复添加
+; 不要加 Group=GameHUB2
+
+[MeasureGameGuard]
+Measure=Plugin
+Plugin=GameHUBFix
+UpdateDivider=1
+
+[GamepadActivation]
+Measure=Plugin
+Plugin=XInput
+Device=0
+Channel=Start
+IfCondition=(GamepadActivation = 1) && (MeasureGameGuard = 0)
+IfTrueAction=[!ActivateConfig "#ROOTCONFIG#" "GameHUB.ini"]
+DynamicVariables=1
+
+[GamepadActivation2]
+Measure=Plugin
+Plugin=XInput
+Device=1
+Channel=Start
+IfCondition=(GamepadActivation2 = 1) && (MeasureGameGuard = 0)
+IfTrueAction=[!ActivateConfig "#ROOTCONFIG#" "GameHUB.ini"]
+DynamicVariables=1
