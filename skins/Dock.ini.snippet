@@ -1,0 +1,14 @@
+; Another dock\Dock.ini -- [Rainmeter] section
+;
+; Keep the existing style-initialisation actions and APPEND the
+; !ActivateConfig bang at the end of OnRefreshAction. The exact first two
+; bangs below belong to the original skin; keep whatever is already there.
+;
+; Also REMOVE the old gate from this file:
+;   [MeasureIsFullScreen] ... IfNotMatchAction=[!DisableMeasure "GamepadActivation"]
+; It permanently disabled the XInput measures and caused the "click desktop,
+; then wait ~10 seconds" symptom.
+
+[Rainmeter]
+Update=1000
+OnRefreshAction=[!CommandMeasure Animate "set_state(0)"][!ShowMeter Background][!ActivateConfig "Another dock\PadListener" "PadListener.ini"]

@@ -1,0 +1,11 @@
+; Append this section to:
+;   GameHUB 2\@Resources\Include\input.inc
+;
+; UpdateDivider=-1 -> this measure does not poll on its own. The always-on
+; PadListener skin drives Update(); plugin state is process-global and shared
+; by every skin that loads the DLL.
+
+[GameHUBFix]
+Measure=Plugin
+Plugin=GameHUBFix
+UpdateDivider=-1

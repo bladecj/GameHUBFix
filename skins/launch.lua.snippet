@@ -1,0 +1,9 @@
+-- GameHUB 2\@Resources\Script\horizontal.lua
+-- GameHUB 2\@Resources\Script\vertical.lua
+--
+-- Inside interact(), place this line right BEFORE the launch command is
+-- dispatched. It only fires for real external programs (commands that do not
+-- start with '['), so GameHUB's internal bangs are not mistaken for a game
+-- launch.
+
+if string.sub(command,1,1) ~= '[' then SKIN:Bang('!CommandMeasure "GameHUBFix" "Launch"') end

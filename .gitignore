@@ -1,0 +1,33 @@
+# Build output (keep the prebuilt DLL in dist/)
+*.dll
+!dist/GameHUBFix.dll
+*.exe
+*.o
+*.a
+*.lib
+*.exp
+*.pdb
+*.ilk
+GameHUBFix.rebuild.dll
+GameHUBFix.repro.dll
+GameHUBFix.verify.dll
+
+# Local test artifacts
+SessionGameTest.exe
+ghf_probe.exe
+tests/out.ini
+tests/*.ini.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
