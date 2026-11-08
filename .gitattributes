@@ -1,0 +1,15 @@
+# Keep shell scripts LF even on Windows (core.autocrlf=true would break them).
+*.sh    text eol=lf
+*.py    text eol=lf
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.md    text eol=lf
+
+# Rainmeter skin files and Windows batch scripts expect CRLF.
+*.bat     text eol=crlf
+*.ini     text eol=crlf
+*.example text eol=crlf
+*.snippet text eol=crlf
+
+# Prebuilt binary must never be normalized.
+*.dll   binary
