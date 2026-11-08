@@ -2,7 +2,8 @@
 # Build from src/ and run all standalone tests. No Rainmeter instance needed.
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 CXX="${CXX:-x86_64-w64-mingw32-g++}"
 OUT="GameHUBFix.verify.dll"
 
