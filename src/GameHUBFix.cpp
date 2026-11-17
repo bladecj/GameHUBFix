@@ -24,8 +24,9 @@
     A) START GATE (Update -> 1 = a game is running, block Start)
        Generic "launch session" detection, no game exe names at all.
     B) FOREGROUND / SKIN Z-ORDER (Launch / Settle bangs)
-       ALT tap, force-activate, AllowSetForegroundWindow(ASFW_ANY), push
-       desktop overlays to HWND_BOTTOM for SettleMs.
+       ALT tap + AllowSetForegroundWindow(ASFW_ANY), push desktop overlays
+       to HWND_BOTTOM for SettleMs, and hand the foreground to the launched
+       game window as soon as it appears (never claim it for Rainmeter).
     C) TASKBAR Z-ORDER (automatic)
        Temporarily take the explorer taskbar strip out of the topmost group
        while a full-screen application is frontmost; restore its exact
@@ -84,6 +85,9 @@ static double     g_gameValue = 0.0;
 static std::wstring g_diag;
 static ULONGLONG  g_lastLayerTick = 0;
 static ULONGLONG  g_settleDeadline = 0;
+static ULONGLONG  g_fgDeadline = 0;
+static volatile LONG g_fgTries = 0, g_fgHandoffs = 0;
+static HWND       g_fgLast = NULL;
 static bool       g_trayActive = false;
 static int        g_instances = 0;
 
@@ -393,10 +397,11 @@ static void EvaluateGuard(const ScanCtx& scan)
     wchar_t buf[320];
     _snwprintf(buf, 319,
         L"GameHUBFix: game=%.0f session=%d pids=%d fallback=%d lock=%lu fg=%s "
-        L"tray=%d settle=%d cycles=%d",
+        L"hand=%d/%d tray=%d settle=%d cycles=%d",
         g_gameValue, g_sessionActive ? 1 : 0, g_sessionCount,
         g_fallbackGate ? 1 : 0, (unsigned long)g_lockedPid,
         fgName.empty() ? L"(desktop)" : W(fgName).c_str(),
+        (int)g_fgHandoffs, (int)g_fgTries,
         g_trayActive ? 1 : 0, GetTickCount64() < g_settleDeadline ? 1 : 0,
         (int)g_cycles);
     buf[319] = 0;
@@ -467,48 +472,103 @@ static void InjectInputPulse()
     keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
 }
 
-static HWND g_rmWindow = NULL;
-static BOOL CALLBACK PickRainmeterCB(HWND h, LPARAM)
+/* Foreground hand-off.
+   The old code made a Rainmeter meter window the foreground window and then
+   pushed it to HWND_BOTTOM with SWP_NOACTIVATE. The foreground therefore
+   stayed on an invisible, buried window: the game looked correctly placed
+   (Z-order was fixed) but was never activated -> no audio, no gamepad input,
+   and some full-screen games minimized themselves. A mouse click fixed it
+   because real input completes the foreground hand-off.
+   Fix: never claim the foreground for Rainmeter. As soon as a process born
+   since Launch owns a real window, put that window on top and activate it. */
+struct FgCtx { HWND hwnd; };
+
+static BOOL CALLBACK FindGameWindowCB(HWND h, LPARAM p)
 {
-    if (!IsWindowVisible(h)) return TRUE;
-    WCHAR cls[128] = { 0 };
-    GetClassNameW(h, cls, 128);
-    if (wcscmp(cls, L"RainmeterMeterWindow") == 0)
+    FgCtx* c = (FgCtx*)p;
+    WCHAR cls[160] = { 0 };
+    GetClassNameW(h, cls, 160);
+    if (IsSystemClass(cls) || (GetWindowLongW(h, GWL_EXSTYLE) & WS_EX_TOOLWINDOW))
+        return TRUE;
+    if (!IsWindowVisible(h) && !IsIconic(h)) return TRUE;
+    DWORD pid = 0;
+    GetWindowThreadProcessId(h, &pid);
+    if (!pid || !Contains(g_sessionPids, pid)) return TRUE;
+    /* A minimized window reports a tiny rect; it still has to be found so it
+       can be restored instead of being left sitting in the taskbar. */
+    if (!IsIconic(h))
     {
-        g_rmWindow = h;
-        return FALSE;
+        RECT r = { 0 };
+        if (!GetWindowRect(h, &r)) return TRUE;
+        if (r.right - r.left < 320 || r.bottom - r.top < 240) return TRUE;
     }
-    return TRUE;
+    c->hwnd = h;                  /* EnumWindows walks top -> bottom */
+    return FALSE;
 }
 
-static void ForceActivateRainmeter()
+static bool ForegroundIsTakeable(HWND fg, HWND game)
 {
-    g_rmWindow = NULL;
-    EnumWindows(PickRainmeterCB, 0);
-    if (!g_rmWindow) return;
+    if (!fg || fg == game) return false;
+    if (fg == GetDesktopWindow() || fg == GetShellWindow()) return true;
+    WCHAR cls[160] = { 0 };
+    GetClassNameW(fg, cls, 160);
+    if (IsSystemClass(cls)) return true;          /* desktop / Rainmeter skin */
+    DWORD pid = 0;
+    GetWindowThreadProcessId(fg, &pid);
+    return pid == GetCurrentProcessId();          /* our own host window */
+}
+
+static void HandoffForeground(ULONGLONG now)
+{
+    if (!g_enabled || now >= g_fgDeadline) return;
+    if (g_sessionPids.empty() && !(g_fgLast && IsWindow(g_fgLast))) return;
+    if (g_fgTries >= 12) return;
+
+    HWND game = NULL;
+    if (!g_sessionPids.empty())
+    {
+        FgCtx ctx = { NULL };
+        EnumWindows(FindGameWindowCB, (LPARAM)&ctx);
+        game = ctx.hwnd;
+    }
+    if (!game && g_fgLast && IsWindow(g_fgLast)) game = g_fgLast;
+    if (!game) return;
+    g_fgLast = game;
+
     HWND fg = GetForegroundWindow();
-    if (!fg || fg == g_rmWindow) return;
-    DWORD fgTid = GetWindowThreadProcessId(fg, NULL);
+    if (!ForegroundIsTakeable(fg, game)) return;  /* user switched elsewhere */
+
+    InterlockedIncrement(&g_fgTries);
+    if (IsIconic(game)) ShowWindowAsync(game, SW_RESTORE);
+
+    DWORD fgTid = fg ? GetWindowThreadProcessId(fg, NULL) : 0;
     DWORD curTid = GetCurrentThreadId();
     BOOL attached = (fgTid && fgTid != curTid)
         ? AttachThreadInput(curTid, fgTid, TRUE) : FALSE;
-    BringWindowToTop(g_rmWindow);
-    SetForegroundWindow(g_rmWindow);
+    AllowSetForegroundWindow(ASFW_ANY);
+    SetWindowPos(game, HWND_TOP, 0, 0, 0, 0, SWP_ASYNC);
+    SetForegroundWindow(game);
     if (attached) AttachThreadInput(curTid, fgTid, FALSE);
+
+    if (GetForegroundWindow() == game)
+        InterlockedIncrement(&g_fgHandoffs);
 }
 
 static void DoLaunch()
 {
-    InjectInputPulse();
-    ForceActivateRainmeter();
-    AllowSetForegroundWindow(ASFW_ANY);
+    InjectInputPulse();                   /* unlock the foreground lock */
+    AllowSetForegroundWindow(ASFW_ANY);   /* let the game claim it itself */
     InterlockedIncrement(&g_pulses);
 
     ArmSession();
 
     g_targetCount = 0;
     EnumWindows(CollectOverlayCB, 0);
-    g_settleDeadline = GetTickCount64() + g_settleMs;
+    ULONGLONG now = GetTickCount64();
+    g_settleDeadline = now + g_settleMs;
+    g_fgDeadline = now + g_settleMs;
+    g_fgLast = NULL;
+    InterlockedExchange(&g_fgTries, 0);
     InterlockedIncrement(&g_launches);
 }
 
@@ -614,6 +674,8 @@ static void RestoreTaskbar()
 
 static void LayerWork(const ScanCtx& scan, ULONGLONG now)
 {
+    HandoffForeground(now);
+
     if (g_enabled && scan.fullscreen)
     {
         if (!g_trayActive) BeginStepAside();
@@ -723,8 +785,9 @@ PLUGIN_EXPORT void ExecuteBang(void* data, LPCWSTR args)
     else if (cmd == L"pulse")
     {
         InjectInputPulse();
-        ForceActivateRainmeter();
         AllowSetForegroundWindow(ASFW_ANY);
+        g_fgDeadline = GetTickCount64() + g_settleMs;
+        InterlockedExchange(&g_fgTries, 0);
         InterlockedIncrement(&g_pulses);
     }
     else if (cmd == L"arm") ArmSession();
