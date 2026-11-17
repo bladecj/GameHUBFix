@@ -548,7 +548,17 @@ static bool ForegroundIsTakeable(HWND fg, HWND game)
     if (IsSystemClass(cls)) return true;          /* desktop / Rainmeter skin */
     DWORD pid = 0;
     GetWindowThreadProcessId(fg, &pid);
-    return pid == GetCurrentProcessId();          /* our own host window */
+    if (pid == GetCurrentProcessId()) return true;/* our own host window */
+    /* A desktop dock / overlay (BitDock, Rainmeter helpers, tool windows) can
+       snatch the foreground right after a game goes fullscreen. The user never
+       Alt+Tabs to these -- they have no taskbar button / are toolwindows -- so
+       treat them as takeable and hand the foreground back to the game.
+       Real application windows are NOT takeable: a deliberate Alt+Tab is still
+       honoured. This is what fixes games that lose focus to BitDock's
+       Qt5152QWindowToolSaveBits window 200ms after launch. */
+    if (IsOverlay(fg)) return true;
+    if (GetWindowLongW(fg, GWL_EXSTYLE) & WS_EX_TOOLWINDOW) return true;
+    return false;
 }
 
 static void HandoffForeground(ULONGLONG now)

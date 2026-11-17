@@ -1,0 +1,59 @@
+﻿
+=== LAUNCH 16890515 ===
+16890515 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=1
+16890750 game=1 sess=1 pids=1 [sessiongametest.exe,] fb=0 lock=0 fg=sessiongametest.exe cls=SessionGameTestWindowClass title=Session Game Test full=0 hand=0/0 settle=1 cyc=2
+16890968 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=3
+
+=== LAUNCH 16891937 ===
+16891968 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=0
+16892171 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=7
+16892375 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=14
+16892593 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=21
+16892796 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=28
+16893015 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=36
+16893218 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=43
+
+=== LAUNCH 16893312 ===
+16893343 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=46
+16893546 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=53
+16893765 game=1 sess=1 pids=1 [,] fb=1 lock=42120 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=60
+16893968 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=67
+16894171 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=74
+16894375 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=81
+16894578 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=88
+
+=== LAUNCH 16894687 ===
+16894703 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=91
+16894906 game=1 sess=1 pids=2 [where.exe,where.exe,] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=98
+16895125 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=105
+16895328 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=112
+16895531 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=119
+16895734 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=126
+16895953 game=0 sess=0 pids=0 [-] fb=0 lock=0 fg=workbuddy.exe cls=Chrome_WidgetWin_1 title=WorkBuddy full=0 hand=0/0 settle=1 cyc=134
+
+=== LAUNCH 16896046 ===
+16896078 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=137
+16896281 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=144
+16896500 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=152
+16896718 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=159
+16896921 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=166
+16897140 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=174
+16897343 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=181
+
+=== LAUNCH 16897406 ===
+16897437 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=183
+16897640 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=190
+16897843 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=197
+16898046 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=204
+16898250 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=211
+16898453 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=218
+16898656 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=225
+
+=== LAUNCH 16898765 ===
+16898796 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=229
+16899000 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=236
+16899203 game=1 sess=1 pids=0 [-] fb=1 lock=42120 fg=python.exe cls=GHFStressE2E title=stress game full=1 hand=0/0 settle=1 cyc=243
+16899406 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=250
+16899609 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=257
+16899812 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=264
+16900015 game=0 sess=1 pids=0 [-] fb=0 lock=0 fg=rainmeter.exe cls=RainmeterMeterWindow title=C:\Users\bladecj\Documents\Rainmeter\Skins\Coloration\Time\Time.ini full=0 hand=0/0 settle=1 cyc=271
