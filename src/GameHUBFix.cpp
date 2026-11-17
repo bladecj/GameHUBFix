@@ -86,6 +86,7 @@ static std::wstring g_diag;
 static ULONGLONG  g_lastLayerTick = 0;
 static ULONGLONG  g_settleDeadline = 0;
 static ULONGLONG  g_fgDeadline = 0;
+static ULONGLONG  g_settle2Due = 0;   /* replay original Settle right after launch */
 static volatile LONG g_fgTries = 0, g_fgHandoffs = 0;
 static HWND       g_fgLast = NULL;
 static bool       g_trayActive = false;
@@ -472,15 +473,47 @@ static void InjectInputPulse()
     keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
 }
 
-/* Foreground hand-off.
-   The old code made a Rainmeter meter window the foreground window and then
-   pushed it to HWND_BOTTOM with SWP_NOACTIVATE. The foreground therefore
-   stayed on an invisible, buried window: the game looked correctly placed
-   (Z-order was fixed) but was never activated -> no audio, no gamepad input,
-   and some full-screen games minimized themselves. A mouse click fixed it
-   because real input completes the foreground hand-off.
-   Fix: never claim the foreground for Rainmeter. As soon as a process born
-   since Launch owns a real window, put that window on top and activate it. */
+/* Stage 1 (Pulse, before launch).
+   Make a Rainmeter skin the foreground process. A game started by the
+   foreground process is allowed to take the foreground itself - this is
+   exactly how the original mouse-click path worked and why the original
+   plugin had correct focus. Removing this step left Z-order right but the
+   game never activated (no audio, no gamepad input, self-minimizing). */
+static HWND g_rmWindow = NULL;
+static BOOL CALLBACK PickRainmeterCB(HWND h, LPARAM)
+{
+    if (!IsWindowVisible(h)) return TRUE;
+    WCHAR cls[128] = { 0 };
+    GetClassNameW(h, cls, 128);
+    if (wcscmp(cls, L"RainmeterMeterWindow") == 0)
+    {
+        g_rmWindow = h;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static void ForceActivateRainmeter()
+{
+    g_rmWindow = NULL;
+    EnumWindows(PickRainmeterCB, 0);
+    if (!g_rmWindow) return;
+    HWND fg = GetForegroundWindow();
+    if (!fg || fg == g_rmWindow) return;
+    DWORD fgTid = GetWindowThreadProcessId(fg, NULL);
+    DWORD curTid = GetCurrentThreadId();
+    BOOL attached = (fgTid && fgTid != curTid)
+        ? AttachThreadInput(curTid, fgTid, TRUE) : FALSE;
+    BringWindowToTop(g_rmWindow);
+    SetForegroundWindow(g_rmWindow);
+    if (attached) AttachThreadInput(curTid, fgTid, FALSE);
+}
+
+/* Stage 2 (Settle, after launch) -> HandoffForeground below.
+   The original plugin injected a second ALT tap plus AllowSetForegroundWindow
+   right after launch so the game could claim the foreground. That line was
+   deleted during the single-plugin merge. It is restored here, driven by
+   Update() on the main thread instead of the old timer queue. */
 struct FgCtx { HWND hwnd; };
 
 static BOOL CALLBACK FindGameWindowCB(HWND h, LPARAM p)
@@ -546,6 +579,7 @@ static void HandoffForeground(ULONGLONG now)
     BOOL attached = (fgTid && fgTid != curTid)
         ? AttachThreadInput(curTid, fgTid, TRUE) : FALSE;
     AllowSetForegroundWindow(ASFW_ANY);
+    BringWindowToTop(game);
     SetWindowPos(game, HWND_TOP, 0, 0, 0, 0, SWP_ASYNC);
     SetForegroundWindow(game);
     if (attached) AttachThreadInput(curTid, fgTid, FALSE);
@@ -557,6 +591,7 @@ static void HandoffForeground(ULONGLONG now)
 static void DoLaunch()
 {
     InjectInputPulse();                   /* unlock the foreground lock */
+    ForceActivateRainmeter();             /* stage 1: game inherits foreground */
     AllowSetForegroundWindow(ASFW_ANY);   /* let the game claim it itself */
     InterlockedIncrement(&g_pulses);
 
@@ -567,6 +602,7 @@ static void DoLaunch()
     ULONGLONG now = GetTickCount64();
     g_settleDeadline = now + g_settleMs;
     g_fgDeadline = now + g_settleMs;
+    g_settle2Due = now + 250;
     g_fgLast = NULL;
     InterlockedExchange(&g_fgTries, 0);
     InterlockedIncrement(&g_launches);
@@ -704,6 +740,21 @@ static void DoTick()
     ULONGLONG now = GetTickCount64();
     ScanCtx scan = Scan();
     EvaluateGuard(scan);                       /* gate: every single Update */
+
+    /* Stage 2 (original Settle): replay ALT tap + foreground permission
+       shortly after launch. Runs on the main thread, independent of when
+       (or whether) a game window is detected, so slow-launching games no
+       longer miss the foreground window. Self-clearing, fires once. */
+    if (g_settle2Due && now >= g_settle2Due)
+    {
+        g_settle2Due = 0;
+        if (g_enabled)
+        {
+            InjectInputPulse();
+            AllowSetForegroundWindow(ASFW_ANY);
+        }
+    }
+
     if (g_lastLayerTick == 0 || now - g_lastLayerTick >= g_tickMs)
     {
         LayerWork(scan, now);                  /* layer: throttled */
@@ -785,6 +836,7 @@ PLUGIN_EXPORT void ExecuteBang(void* data, LPCWSTR args)
     else if (cmd == L"pulse")
     {
         InjectInputPulse();
+        ForceActivateRainmeter();
         AllowSetForegroundWindow(ASFW_ANY);
         g_fgDeadline = GetTickCount64() + g_settleMs;
         InterlockedExchange(&g_fgTries, 0);
