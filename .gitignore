@@ -1,6 +1,7 @@
 # Build output (keep the prebuilt DLL in dist/)
 *.dll
 !dist/GameHUBFix.dll
+!dist/GameHUBFix-focus-reclaim.dll
 *.exe
 *.o
 *.a
